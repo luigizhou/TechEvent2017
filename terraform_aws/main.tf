@@ -237,7 +237,7 @@ resource "null_resource" "ssh-ready" {
   provisioner "remote-exec" {
     script = "scripts/wait_for_instance.sh"
     connection {
-      host = "${element(aws_instance.web.*.public_ip, count.indexx)}"
+      host = "${element(aws_instance.web.*.public_ip, count.index)}"
       type = "ssh"
       user = "${var.ssh_user}"
       private_key = "${file("${path.module}/${var.ssh_kp}")}"
