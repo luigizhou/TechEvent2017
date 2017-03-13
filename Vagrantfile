@@ -19,7 +19,6 @@ Vagrant.configure(2) do |config|
   # Create Ansible Management node
   config.vm.define "demo" do |demo|
         demo.vm.hostname = "demo.terraform.lcl"
-        demo.vm.binary = true
         demo.vm.provision "shell", inline: "sudo -l mkdir -p /tmp/demo-box"
         demo.vm.provision :file, source: Dir.getwd + "/techevent", destination: "/tmp/techevent"
         demo.vm.provision "shell", inline: "sudo mv /tmp/techevent /home/vagrant/ && sudo chown -R vagrant:vagrant /home/vagrant/techevent"
