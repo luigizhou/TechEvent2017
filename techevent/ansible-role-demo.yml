@@ -1,0 +1,29 @@
+---
+- hosts: all
+  remote_user: ec2-user
+  become: true
+
+  tasks:
+	- name: Ensure Apache is Installed
+  	  package:
+      name: httpd
+      state: present
+
+    - name: Ensure Apache is always running
+      service: 
+      name: httpd
+      state: started
+      enabled: yes
+
+    - name: Get Hostname
+      shell: hostname
+      register: hostname
+      changed_when: no
+
+    - name: index.html under /var/www
+      template: 
+        src: ./index.html.j2
+        dest: /var/www/html/index.html
+      owner: apache
+      group: apache
+      mode: '0644'

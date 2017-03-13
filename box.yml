@@ -1,0 +1,83 @@
+---
+- hosts: localhost
+  become: true
+  connection: local
+
+  vars:
+    terraform_version: 0.8.4
+    terraform_repo_url: "https://releases.hashicorp.com/terraform/{{terraform_version}}/terraform_{{terraform_version}}_linux_amd64.zip"
+    terraform_dist_file: "terraform_{{terraform_version}}_linux_amd64.zip"
+    terraform_base_install_dir: /opt/demo/terraform
+  tasks:
+
+    # Prepare Virtual Machine
+    - name: Install python boto
+      pip:
+        name: boto
+
+    - name: Permit Password Auth
+      lineinfile:
+        dest: '/etc/ssh/sshd_config'
+        regexp: '^PasswordAuthentication\s+no'
+        #line: '# PasswordAuthentication no '
+        state: absent
+
+    - name: Restart sshd service
+      service:
+        name: sshd
+        state: restarted
+
+
+    # Terraform Installation
+    - name: "Install Unzip"
+      yum:
+        name: unzip
+        state: present
+
+    - name: "Download the {{ terraform_version }} Terraform version"
+      get_url:
+        url: "{{ terraform_repo_url }}"
+        dest: "/tmp/{{ terraform_dist_file }}"
+
+    - name: Extract Terraform | Create destination directory
+      file:
+        path: "{{ terraform_base_install_dir}}/{{ terraform_version }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Extract Terraform | Install Terraform binary 
+      unarchive:
+        src: "/tmp/{{ terraform_dist_file }}"
+        dest:  "{{ terraform_base_install_dir}}/{{ terraform_version }}/"
+        owner: root
+        group: root
+        mode: 0555
+        copy: no
+
+    - name: Terraform | Create symlink to current version
+      file:
+        path: "{{ terraform_base_install_dir}}/current"
+        src:  "{{ terraform_base_install_dir}}/{{ terraform_version }}"
+        state: link
+        force: true
+      register: current_version
+
+    - name: Terraform | Create system-wide profile file
+      template: src=./terraform.sh.j2 dest=/etc/profile.d/terraform.sh owner=root group=root mode=0444
+
+
+    - name: Terraform | Get old installation
+      shell: ls -1 "{{ terraform_base_install_dir}}/"
+      register: old_contents
+      changed_when: false
+
+    - name: Terraform | Delete old installation
+      file:
+        dest: "{{ terraform_base_install_dir }}/{{ item }}"
+        state: absent
+      with_items: "{{ old_contents.stdout_lines }}"
+      when:
+         - item not in current_version.src
+         - item not in current_version.dest
