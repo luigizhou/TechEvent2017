@@ -7,6 +7,9 @@
   vars_files:
     - vars/defaults.yml
 
+  var:
+    template_name: index
+
   tasks:
     - name: Install Apache HTTPD
       yum:
@@ -40,7 +43,7 @@
 
     - name: copy default page
       template:
-        src: templates/index.html.j2
+        src: templates/{{template_name}}.html.j2
         dest: /var/www/html/index.html
       tags:
         - configure

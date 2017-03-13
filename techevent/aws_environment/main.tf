@@ -196,7 +196,7 @@ resource "aws_instance" "web" {
 
   # Our Security group to allow HTTP and SSH access
   vpc_security_group_ids = ["${aws_security_group.default.id}"]
-  subnet_id              = "${aws_subnet.public.id}"aws_lb_cookie_stickiness_policy
+  subnet_id              = "${aws_subnet.public.id}"
 
   #Instance tags
   tags {
