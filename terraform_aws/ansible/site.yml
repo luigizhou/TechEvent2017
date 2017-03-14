@@ -7,8 +7,32 @@
   vars_files:
     - vars/defaults.yml
 
-  var:
-    template_name: index
+  vars:
+    page: index
+
+  tasks:
+    - name: Install Apache HTTPD
+      yum:
+        name: httpd
+        state: present
+      tags:
+        - install
+
+    - name: Remove welcome.conf
+      stat:
+        path: /etc/httpd/conf.d/welcome.conf
+      register: st
+      tags:
+        - install
+        - configure
+---
+- name: EC2 configure Web Server
+  hosts: all
+  gather_facts: true
+  become: true
+
+  vars_files:
+    - vars/defaults.yml
 
   tasks:
     - name: Install Apache HTTPD
@@ -43,7 +67,36 @@
 
     - name: copy default page
       template:
-        src: templates/{{template_name}}.html.j2
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+      tags:
+        - configure
+
+  handlers:
+    - name: restart httpd
+      systemd:
+        name: httpd.service
+        enabled: true
+        state: restarted
+
+    - command: mv /etc/httpd/conf.d/welcome.conf /etc/httpd/conf.d/welcome.conf.disable
+      when: st.stat.exists
+      notify: restart httpd
+      tags:
+        - configure
+        - install
+
+    - name: Apache HTTPD start
+      systemd:
+        name: httpd.service
+        enabled: true
+        state: started
+      tags:
+        - install
+
+    - name: copy default page
+      template:
+        src: templates/{{page}}.html.j2
         dest: /var/www/html/index.html
       tags:
         - configure

@@ -21,6 +21,8 @@ Vagrant.configure(2) do |config|
         demo.vm.hostname = "demo.terraform.lcl"
         demo.vm.provision "shell", inline: "sudo -l mkdir -p /tmp/demo-box"
         demo.vm.provision :file, source: Dir.getwd + "/terraform_aws", destination: "/tmp/terraform_aws"
+        demo.vm.provision :file, source: Dir.getwd + "/ja-terraform-ansible-lab", destination: "/tmp/ja-terraform-ansible-lab"
+        demo.vm.provision "shell", inline: "sudo mv /tmp/ja-terraform-ansible-lab /home/vagrant/ && sudo chown -R vagrant:vagrant /home/vagrant/ja-*"
         demo.vm.provision "shell", inline: "sudo mv /tmp/terraform_aws /home/vagrant/ && sudo chown -R vagrant:vagrant /home/vagrant/terraform_aws"
         demo.vm.provision :file, source: Dir.getwd + "/config.sh", destination: "/tmp/demo-box/config.sh"
         demo.vm.provision :file, source: Dir.getwd + "/ansible.cfg", destination: "/tmp/demo-box/ansible.cfg"
