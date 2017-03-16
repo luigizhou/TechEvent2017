@@ -22,6 +22,7 @@ Vagrant.configure(2) do |config|
         demo.vm.provision "shell", inline: "sudo -l mkdir -p /tmp/demo-box"
         demo.vm.provision :file, source: Dir.getwd + "/techevent-lab", destination: "/tmp/techevent-lab"
         demo.vm.provision "shell", inline: "sudo mv /tmp/techevent-lab /home/vagrant/ && sudo chown -R vagrant:vagrant /home/vagrant/techevent-lab"
+        demo.vm.provision "shell", inline: "sudo chmod +x /home/vagrant/techevent-lab/create_setenv.sh"
         demo.vm.provision "shell", inline: "sudo chmod 600 /home/vagrant/techevent-lab/pk/*"
         demo.vm.provision :file, source: Dir.getwd + "/config.sh", destination: "/tmp/demo-box/config.sh"
         demo.vm.provision :file, source: Dir.getwd + "/ansible.cfg", destination: "/tmp/demo-box/ansible.cfg"
