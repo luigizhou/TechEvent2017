@@ -7,7 +7,7 @@
   vars_files:
     - vars/defaults.yml
 
-  var:
+  vars:
     page: index
 
   tasks:
