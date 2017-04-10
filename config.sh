@@ -11,7 +11,7 @@
 script=${0##*/}
 log=${script}.$$.log
 thishost=${HOSTNAME%%.*}
-pkgs_list="epel-release python2-pip git ansible make rubygem-rake iproute vim-enhanced dos2unix"
+pkgs_list="epel-release python2-pip git ansible make rubygem-rake iproute vim-enhanced"
 ecops_devops_box_playbook=box.yml
 
 ##
@@ -120,7 +120,7 @@ Ansible_Run() {
 
 ### Main ###
 Header
-Update_OS
+#Update_OS
 Install_Req
 Ansible_Run
 
