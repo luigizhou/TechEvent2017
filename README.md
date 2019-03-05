@@ -62,4 +62,4 @@ echo yes | terraform destroy # or terraform destroy -force
 
 ## AUTHOR
 
-Luigi Zhou - <luigi.zhou@ynap.com> | ECOPS WCS FRONTEND TEAM
+Luigi Zhou 
